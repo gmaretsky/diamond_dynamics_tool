@@ -27,4 +27,4 @@ The tool evaluates each game in the context of prior performance, allowing users
 
 ## Purpose
 
-This project is part of the Diamond Dynamics framework, focused on understanding performance as a dynamic system rather than a static outcome.
+This project is part of Diamond Dynamics, which focuses on understanding performance as a dynamic system rather than a static outcome.
