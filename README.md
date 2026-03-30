@@ -10,7 +10,7 @@ Rather than focusing on final averages, this tool measures how performance behav
 - Consistency Score: Measures stability across games
 - Adjustment Score: Measures deviation from recent performance
 - Game-by-game trend visualization
-- Interactive metric selection
+
 
 ## How It Works
 
