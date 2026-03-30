@@ -1,8 +1,7 @@
-# diamond_dynamics_tool
-Game-by-game performance trend analysis tool built with Streamlit. Designed to evaluate consistency and adjustment dynamics in baseball performance.
+
 # Diamond Dynamics Tool
 
-Diamond Dynamics is a game-by-game performance analysis tool built to evaluate how player performance evolves over time.
+Diamond Dynamics is a game-by-game performance trend analysis tool built to evaluate how player performance evolves over time.
 
 Rather than focusing on final averages, this tool measures how performance behaves within a season.
 
