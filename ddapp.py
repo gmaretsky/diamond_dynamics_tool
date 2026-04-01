@@ -449,7 +449,7 @@ if page == "Tool":
     st.markdown("""
     <div class="section-box">
         <b>What this tool is measuring</b><br><br>
-        This tool evaluates player behavior using a selected stat as the signal:
+        This tool evaluates player performance using a selected stat as the signal:
         <ul>
             <li><b>Consistency</b> — how consistently the player performs over time</li>
             <li><b>Adjustment</b> — how the player responds after performance changes</li>
