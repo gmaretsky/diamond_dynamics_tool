@@ -81,4 +81,7 @@ streamlit run app.py
 
 ---
 
-## Grace Maretsky
+## Author  
+Grace Maretsky  
+
+
