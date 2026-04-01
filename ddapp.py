@@ -360,13 +360,14 @@ def build_summary(consistency: float, adjustment: float, baseline: float, stat_n
     consistency_text = classify_consistency(consistency)
     adjustment_text = classify_adjustment(adjustment)
 
-    return (
-        f"This player grades as **{profile.lower()}** over the uploaded sample. "
-        f"The selected stat has a baseline of **{baseline:.3f}** in **{stat_name}**, "
-        f"which represents the player's typical level in this dataset. "
-        f"The current consistency reading is **{consistency_text.lower()}**, "
-        f"and the current adjustment reading is **{adjustment_text.lower()}**."
-    )
+return (
+    f"This player grades as <b>{profile.lower()}</b> over the uploaded sample. "
+    f"The selected stat has a baseline of <b>{baseline:.3f}</b> in <b>{stat_name}</b>, "
+    f"which represents the player's typical level in this dataset. "
+    f"The current consistency reading is <b>{consistency_text.lower()}</b>, "
+    f"and the current adjustment reading is <b>{adjustment_text.lower()}</b>."
+)
+    
 
 def trend_direction_text(series: pd.Series, label: str) -> str:
     valid = series.dropna()
