@@ -354,20 +354,18 @@ def overall_profile(consistency: float, adjustment: float) -> str:
     if consistency >= 0.70 and adjustment < 0.70:
         return "Stable but less responsive"
     return "Variable and unstable"
-
 def build_summary(consistency: float, adjustment: float, baseline: float, stat_name: str) -> str:
     profile = overall_profile(consistency, adjustment)
     consistency_text = classify_consistency(consistency)
     adjustment_text = classify_adjustment(adjustment)
 
-return (
-    f"This player grades as <b>{profile.lower()}</b> over the uploaded sample. "
-    f"The selected stat has a baseline of <b>{baseline:.3f}</b> in <b>{stat_name}</b>, "
-    f"which represents the player's typical level in this dataset. "
-    f"The current consistency reading is <b>{consistency_text.lower()}</b>, "
-    f"and the current adjustment reading is <b>{adjustment_text.lower()}</b>."
-)
-    
+    return (
+        f"This player grades as <b>{profile.lower()}</b> over the uploaded sample. "
+        f"The selected stat has a baseline of <b>{baseline:.3f}</b> in <b>{stat_name}</b>, "
+        f"which represents the player's typical level in this dataset. "
+        f"The current consistency reading is <b>{consistency_text.lower()}</b>, "
+        f"and the current adjustment reading is <b>{adjustment_text.lower()}</b>."
+    )
 
 def trend_direction_text(series: pd.Series, label: str) -> str:
     valid = series.dropna()
