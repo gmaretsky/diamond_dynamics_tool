@@ -568,6 +568,11 @@ elif page == "Data Format":
         <p>How to structure your file.</p>
     </div>
     """, unsafe_allow_html=True)
+    st.markdown("""
+<div class="section-box">
+    The tool is flexible to sample size, allowing users to upload as much or as little data as they choose, with calculations updating as the dataset grows.
+</div>
+""", unsafe_allow_html=True)
 
     st.subheader("Example (Game)")
     st.dataframe(pd.DataFrame({
