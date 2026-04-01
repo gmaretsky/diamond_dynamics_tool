@@ -9,8 +9,8 @@ Rather than relying on static averages, players establish their own baseline fro
 
 ## Core Concepts  
 
-- Consistency → How stable a player’s performance is relative to their evolving baseline  
-- Adjustment → How well a player responds after performance changes  
+- **Consistency** → How stable a player’s performance is relative to their evolving baseline  
+- **Adjustment** → How well a player responds after performance changes  
 
 Both metrics update with each new data point, creating a dynamic view of performance over time.
 
