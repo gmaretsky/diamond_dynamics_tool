@@ -1,4 +1,5 @@
 # 💎 Diamond Dynamics: Consistency + Adjustment Tool
+🚀 **App:** [Open Diamond Dynamics Tool](https://diamonddynamicstool-g8un2yafdaotpa8qsu2csu.streamlit.app/)
 
 ## Overview  
 Diamond Dynamics is a Streamlit application that evaluates player performance through consistency and adjustment using game-by-game data.
