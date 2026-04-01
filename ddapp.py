@@ -388,11 +388,11 @@ def stat_insight(calc_df: pd.DataFrame, value_col: str, baseline: float) -> str:
     recent_vs_baseline = "above" if recent_avg > baseline else "below" if recent_avg < baseline else "in line with"
 
     return (
-        f"The player's selected stat begins at **{first:.3f}** and ends at **{latest:.3f}**, "
-        f"so the latest value is **{direction}** than the first value in the sample. "
-        f"The recent short-window average is **{recent_avg:.3f}**, which sits **{recent_vs_baseline}** "
-        f"the overall baseline of **{baseline:.3f}**."
-    )
+    f"The player's selected stat begins at <b>{first:.3f}</b> and ends at <b>{latest:.3f}</b>, "
+    f"so the latest value is <b>{direction}</b> than the first value in the sample. "
+    f"The recent short-window average is <b>{recent_avg:.3f}</b>, which sits <b>{recent_vs_baseline}</b> "
+    f"the overall baseline of <b>{baseline:.3f}</b>."
+)
 
 # ==================================================
 # CHARTING (NO GRIDLINES)
