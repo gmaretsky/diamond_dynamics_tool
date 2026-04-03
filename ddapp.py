@@ -545,7 +545,7 @@ elif page == "How It Works":
         <b>Step 1:</b> Go to FanGraphs and find a player's game log.
     </div>
     <div class="section-box">
-        <b>Step 2:</b> Copy the Game/Date column and a stat (OPS, OBP, SLG, etc.).
+        <b>Step 2:</b> Copy the Game/Date column and a rate-based stat (OPS, OBP, SLG, etc.).
     </div>
     <div class="section-box">
         <b>Step 3:</b> Paste into Excel and save as CSV.
