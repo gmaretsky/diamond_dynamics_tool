@@ -441,7 +441,9 @@ if page == "Tool":
         st.markdown("""
         <div class="hero">
             <h1 style="margin-bottom:0;">Diamond Dynamics Tool</h1>
-            <p style="margin-top:5px;">Consistency and Adjustment, game by game.</p>
+            <p style="margin-top:5px;">
+Track how a player’s performance evolves over time through consistency and adjustment trends.
+</p>
         </div>
         """, unsafe_allow_html=True)
 
