@@ -96,8 +96,9 @@ with st.sidebar:
 
 **Adjustment**
 - **0.70 - 1.00** = Strong
-- **0.40 - 0.69** = Moderate
-- **Below 0.40** = Weak
+- **0.50 - 0.69** = Moderate
+- **0.35 - 0.49** = Stable / Neutral
+- **Below 0.35** = Low Activity
 """)
 # ==================================================
 # STYLING (Diamond Dynamics purple/black aesthetic)
