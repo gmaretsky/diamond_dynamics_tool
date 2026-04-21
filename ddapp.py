@@ -239,28 +239,41 @@ def calculate_quality_weighted_consistency(values: np.ndarray) -> float:
     if len(values) == 1:
         return 0.50
 
-    baseline = float(np.mean(values))
-    deviations = np.abs(values - baseline)
-    quality_scale = min_max_normalize(values)
+    values = np.array(values, dtype=float)
 
-    weighted_deviations = []
-    for i in range(len(values)):
-        deviation = deviations[i]
-        penalty_weight = 1 - quality_scale[i]  # worse performance -> larger penalty
-        weighted_deviations.append(deviation * (1 + penalty_weight))
+    # --- STEP 1: Measure spread (this is the core fix) ---
+    std_dev = np.std(values)
+    value_range = np.max(values) - np.min(values)
 
-    weighted_deviations = np.array(weighted_deviations, dtype=float)
-
-    avg_weighted_dev = float(np.mean(weighted_deviations))
-    max_weighted_dev = float(np.max(weighted_deviations))
-
-    if max_weighted_dev == 0:
-        stability_component = 1.0
+    if value_range == 0:
+        spread_score = 1.0
     else:
-        stability_component = 1 - (avg_weighted_dev / max_weighted_dev)
+        spread_score = 1 - (std_dev / value_range)
 
-    average_quality = float(np.mean(quality_scale))
-    consistency = (0.60 * average_quality) + (0.40 * stability_component)
+    spread_score = max(0.0, min(1.0, spread_score))
+
+    # --- STEP 2: Reward tight clustering around recent performance ---
+    recent_window = values[-min(5, len(values)):]
+    recent_std = np.std(recent_window)
+
+    if value_range == 0:
+        recent_stability = 1.0
+    else:
+        recent_stability = 1 - (recent_std / value_range)
+
+    recent_stability = max(0.0, min(1.0, recent_stability))
+
+    # --- STEP 3: Light quality influence (NOT dominant) ---
+    quality_scale = min_max_normalize(values)
+    avg_quality = float(np.mean(quality_scale))
+
+    # --- FINAL BLEND ---
+    consistency = (
+        0.50 * spread_score +      # overall tightness
+        0.30 * recent_stability +  # recent stability
+        0.20 * avg_quality        # slight performance reward
+    )
+
     return float(max(0.0, min(1.0, consistency)))
 
 def calculate_adjustment_score(values: np.ndarray) -> float:
@@ -345,15 +358,18 @@ def classify_adjustment(score: float) -> str:
 def overall_profile(consistency: float, adjustment: float) -> str:
     if pd.isna(consistency) and pd.isna(adjustment):
         return "Early sample"
-    if pd.isna(consistency):
-        return "Adjustment forming"
-    if consistency >= 0.70 and adjustment >= 0.70:
-        return "Stable and resilient"
-    if consistency < 0.70 and adjustment >= 0.70:
-        return "Variable but adaptive"
-    if consistency >= 0.70 and adjustment < 0.70:
-        return "Stable but less responsive"
-    return "Variable and unstable"
+    if consistency >= 0.70:
+        if adjustment >= 0.70:
+            return "Stable and resilient"
+        return "Stable"
+    if consistency >= 0.50:
+        if adjustment >= 0.70:
+            return "Stable with adaptability"
+        return "Generally stable"
+    if consistency >= 0.40:
+        return "Moderately variable"
+
+    return "Highly variable""
 def build_summary(consistency: float, adjustment: float, baseline: float, stat_name: str) -> str:
     profile = overall_profile(consistency, adjustment)
     consistency_text = classify_consistency(consistency)
