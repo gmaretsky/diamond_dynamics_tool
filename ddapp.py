@@ -521,85 +521,16 @@ Track how a player’s performance evolves over time through consistency and adj
         with m3:
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
-            import matplotlib.pyplot as plt
-import io
 
-fig, ax = plt.subplots(figsize=(8, 6))
-
-# Background
-fig.patch.set_facecolor("#0a0a0f")
-ax.set_facecolor("#0a0a0f")
-ax.axis("off")
-
-# Title
-ax.text(
-    0.5, 0.9, "Diamond Dynamics",
-    ha="center",
-    fontsize=20,
-    color="#a855f7",
-    fontweight="bold"
-)
-
-# Scores
-ax.text(
-    0.5, 0.72,
-    f"Consistency: {consistency:.2f}",
-    ha="center",
-    fontsize=13,
-    color="white"
-)
-
-ax.text(
-    0.5, 0.65,
-    f"Adjustment: {adjustment:.2f}",
-    ha="center",
-    fontsize=13,
-    color="white"
-)
-
-# Divider line
-ax.hlines(y=0.6, xmin=0.2, xmax=0.8, colors="#a78bfa", linewidth=1)
-
-# Summary
-ax.text(
-    0.5, 0.48,
-    build_summary(consistency, adjustment, baseline, value_col),
-    ha="center",
-    fontsize=10,
-    color="#e5e5ff",
-    wrap=True
-)
-
-# Insight (slightly brighter tone)
-ax.text(
-    0.5, 0.28,
-    stat_insight(calc_df, value_col, baseline),
-    ha="center",
-    fontsize=10,
-    color="#cfcfff",
-    wrap=True
-)
-
-# Save image to buffer
-buf = io.BytesIO()
-plt.savefig(buf, format="png", bbox_inches="tight")
-buf.seek(0)
-
-# Download button
-st.download_button(
-    label="Download Diamond Dynamics Graphic",
-    data=buf,
-    file_name="diamond_dynamics_report.png",
-    mime="image/png"
-)
-st.markdown(f"""
+        st.markdown(f"""
         <div class="insight-box">
             <b>Profile Summary</b><br><br>
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
-st.subheader("Consistency Trend")
-plot_line(
+
+        st.subheader("Consistency Trend")
+        plot_line(
             x=trend_x_labels,
             y=trend_df["Consistency"],
             title="Consistency Trend",
@@ -607,9 +538,10 @@ plot_line(
             ylabel="Consistency",
             y_limits=(0, 1)
         )
-st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
-st.subheader("Adjustment Trend")
-plot_line(
+        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
+
+        st.subheader("Adjustment Trend")
+        plot_line(
             x=trend_x_labels,
             y=trend_df["Adjustment"],
             title="Adjustment Trend",
@@ -617,8 +549,9 @@ plot_line(
             ylabel="Adjustment",
             y_limits=(0, 1)
         )
-st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
-st.markdown(f"""
+        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+
+        st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
@@ -629,14 +562,14 @@ st.markdown(f"""
 # HOW IT WORKS PAGE
 # ==================================================
 elif page == "How It Works":
-st.markdown("""
+    st.markdown("""
     <div class="hero">
         <h1>How It Works</h1>
         <p>A detailed guide to using FanGraphs-style data in the Diamond Dynamics tool.</p>
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("""
+    st.markdown("""
     <div class="section-box">
         <b>Step 1:</b> Go to FanGraphs and find a player's game log.
     </div>
@@ -658,26 +591,26 @@ st.markdown("""
 # DATA FORMAT PAGE
 # ==================================================
 elif page == "Data Format":
-st.markdown("""
+    st.markdown("""
     <div class="hero">
         <h1>Data Format</h1>
         <p>How to structure your file.</p>
     </div>
     """, unsafe_allow_html=True)
-st.markdown("""
+    st.markdown("""
 <div class="section-box">
     The tool is flexible to sample size, allowing users to upload as much or as little data as they choose, with calculations updating as data accumulates.
 </div>
 """, unsafe_allow_html=True)
 
-st.subheader("Example (Game)")
-st.dataframe(pd.DataFrame({
+    st.subheader("Example (Game)")
+    st.dataframe(pd.DataFrame({
         "Game": [1, 2, 3],
         "OPS": [0.000, 0.541, 0.800]
     }))
 
-st.subheader("Example (Date)")
-st.dataframe(pd.DataFrame({
+    st.subheader("Example (Date)")
+    st.dataframe(pd.DataFrame({
         "Date": ["2026-03-01", "2026-03-02", "2026-03-03"],
         "OBP": [0.300, 0.400, 0.350]
     }))
