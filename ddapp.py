@@ -522,13 +522,11 @@ Track how a player’s performance evolves over time through consistency and adj
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
 st.markdown("---")
-
-       report_text = f"""
-       DIAMOND DYNAMICS REPORT
-
-       Consistency: {consistency:.2f}
-       Adjustment: {adjustment:.2f}
-       Baseline: {baseline:.3f}
+report_text = f"""
+DIAMOND DYNAMICS REPORT
+Consistency: {consistency:.2f}
+Adjustment: {adjustment:.2f}
+Baseline: {baseline:.3f}
 
 PROFILE SUMMARY:
 {build_summary(consistency, adjustment, baseline, value_col)}
