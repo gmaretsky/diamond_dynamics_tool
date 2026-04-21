@@ -521,6 +521,77 @@ Track how a player’s performance evolves over time through consistency and adj
         with m3:
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
+            import matplotlib.pyplot as plt
+import io
+
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# Background
+fig.patch.set_facecolor("#0a0a0f")
+ax.set_facecolor("#0a0a0f")
+ax.axis("off")
+
+# Title
+ax.text(
+    0.5, 0.9, "Diamond Dynamics",
+    ha="center",
+    fontsize=20,
+    color="#a855f7",
+    fontweight="bold"
+)
+
+# Scores
+ax.text(
+    0.5, 0.72,
+    f"Consistency: {consistency:.2f}",
+    ha="center",
+    fontsize=13,
+    color="white"
+)
+
+ax.text(
+    0.5, 0.65,
+    f"Adjustment: {adjustment:.2f}",
+    ha="center",
+    fontsize=13,
+    color="white"
+)
+
+# Divider line
+ax.hlines(y=0.6, xmin=0.2, xmax=0.8, colors="#a78bfa", linewidth=1)
+
+# Summary
+ax.text(
+    0.5, 0.48,
+    build_summary(consistency, adjustment, baseline, value_col),
+    ha="center",
+    fontsize=10,
+    color="#e5e5ff",
+    wrap=True
+)
+
+# Insight (slightly brighter tone)
+ax.text(
+    0.5, 0.28,
+    stat_insight(calc_df, value_col, baseline),
+    ha="center",
+    fontsize=10,
+    color="#cfcfff",
+    wrap=True
+)
+
+# Save image to buffer
+buf = io.BytesIO()
+plt.savefig(buf, format="png", bbox_inches="tight")
+buf.seek(0)
+
+# Download button
+st.download_button(
+    label="Download Diamond Dynamics Graphic",
+    data=buf,
+    file_name="diamond_dynamics_report.png",
+    mime="image/png"
+)
 
         st.markdown(f"""
         <div class="insight-box">
