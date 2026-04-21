@@ -607,10 +607,9 @@ plot_line(
             ylabel="Consistency",
             y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
-
-        st.subheader("Adjustment Trend")
-        plot_line(
+st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
+st.subheader("Adjustment Trend")
+plot_line(
             x=trend_x_labels,
             y=trend_df["Adjustment"],
             title="Adjustment Trend",
@@ -618,9 +617,8 @@ plot_line(
             ylabel="Adjustment",
             y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
-
-        st.markdown(f"""
+st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
