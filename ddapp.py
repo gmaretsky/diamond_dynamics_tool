@@ -629,14 +629,14 @@ st.markdown(f"""
 # HOW IT WORKS PAGE
 # ==================================================
 elif page == "How It Works":
-    st.markdown("""
+st.markdown("""
     <div class="hero">
         <h1>How It Works</h1>
         <p>A detailed guide to using FanGraphs-style data in the Diamond Dynamics tool.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+st.markdown("""
     <div class="section-box">
         <b>Step 1:</b> Go to FanGraphs and find a player's game log.
     </div>
@@ -658,26 +658,26 @@ elif page == "How It Works":
 # DATA FORMAT PAGE
 # ==================================================
 elif page == "Data Format":
-    st.markdown("""
+st.markdown("""
     <div class="hero">
         <h1>Data Format</h1>
         <p>How to structure your file.</p>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("""
+st.markdown("""
 <div class="section-box">
     The tool is flexible to sample size, allowing users to upload as much or as little data as they choose, with calculations updating as data accumulates.
 </div>
 """, unsafe_allow_html=True)
 
-    st.subheader("Example (Game)")
-    st.dataframe(pd.DataFrame({
+st.subheader("Example (Game)")
+st.dataframe(pd.DataFrame({
         "Game": [1, 2, 3],
         "OPS": [0.000, 0.541, 0.800]
     }))
 
-    st.subheader("Example (Date)")
-    st.dataframe(pd.DataFrame({
+st.subheader("Example (Date)")
+st.dataframe(pd.DataFrame({
         "Date": ["2026-03-01", "2026-03-02", "2026-03-03"],
         "OBP": [0.300, 0.400, 0.350]
     }))
