@@ -352,9 +352,12 @@ def classify_adjustment(score: float) -> str:
         return "Not enough data yet"
     if score >= 0.70:
         return "Strong"
-    if score >= 0.40:
+    if score >= 0.50:
         return "Moderate"
-    return "Weak"
+    if score >= 0.35:
+        return "Stable / Neutral"
+
+    return "Low Activity"
 
 def overall_profile(consistency: float, adjustment: float) -> str:
     if pd.isna(consistency) and pd.isna(adjustment):
