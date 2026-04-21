@@ -586,28 +586,7 @@ elif page == "How It Works":
         <b>Step 5:</b> The tool builds a baseline and evaluates consistency and adjustment game by game.
     </div>
     """, unsafe_allow_html=True)
-st.markdown("---")
 
-report_text = f"""
-DIAMOND DYNAMICS REPORT
-
-Consistency: {consistency:.2f}
-Adjustment: {adjustment:.2f}
-Baseline: {baseline:.3f}
-
-PROFILE SUMMARY:
-{build_summary(consistency, adjustment, baseline, value_col)}
-
-DATA INSIGHT:
-{stat_insight(calc_df, value_col, baseline)}
-"""
-
-st.download_button(
-    label="Download Diamond Dynamics Report",
-    data=report_text,
-    file_name="diamond_dynamics_report.txt",
-    mime="text/plain"
-)
 # ==================================================
 # DATA FORMAT PAGE
 # ==================================================
