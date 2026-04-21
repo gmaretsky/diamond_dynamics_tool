@@ -2,7 +2,67 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
+import io
+import base64
 
+def fig_to_base64(fig):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight")
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode()
+def generate_report(player_name, consistency_score, adjustment_score, insight_text, consistency_fig, adjustment_fig):
+    consistency_img = fig_to_base64(consistency_fig)
+    adjustment_img = fig_to_base64(adjustment_fig)
+    html = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial;
+                background: linear-gradient(180deg, #0a0a0f, #151520);
+                color: white;
+                padding: 30px;
+            }}
+            h1 {{ color: #a855f7; }}
+            h2 {{ color: #c084fc; }}
+            .section {{ margin-bottom: 30px; }}
+            img {{
+                width: 100%;
+                border-radius: 12px;
+                margin-top: 10px;
+            }}
+            .box {{
+                background: rgba(168, 85, 247, 0.12);
+                padding: 15px;
+                border-radius: 12px;
+            }}
+        </style>
+    </head>
+    <body>
+        <h1>Diamond Dynamics Report</h1>
+        <div class="section box">
+            <h2>Player Profile</h2>
+            <p><strong>Name:</strong> {player_name}</p>
+            <p><strong>Consistency Score:</strong> {consistency_score:.2f}</p>
+            <p><strong>Adjustment Score:</strong> {adjustment_score:.2f}</p>
+        </div>
+        <div class="section">
+            <h2>Consistency Trend</h2>
+            <img src="data:image/png;base64,{consistency_img}">
+        </div>
+        <div class="section">
+            <h2>Adjustment Trend</h2>
+            <img src="data:image/png;base64,{adjustment_img}">
+        </div>
+
+        <div class="section box">
+            <h2>Data Insight</h2>
+            <p>{insight_text}</p>
+        </div>
+    </body>
+    </html>
+    """
+    return html
 # ==================================================
 # PAGE CONFIG
 # ==================================================
@@ -528,7 +588,33 @@ Track how a player’s performance evolves over time through consistency and adj
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
+        st.markdown("---")
+st.markdown("### 📥 Export")
 
+insight_text = stat_insight(calc_df, value_col, baseline)
+
+report_html = generate_report(
+    player_name="Player",
+    consistency_score=consistency,
+    adjustment_score=adjustment,
+    insight_text=insight_text,
+    consistency_fig=consistency_fig,
+    adjustment_fig=adjustment_fig
+)
+
+st.download_button(
+    label="Download Diamond Dynamics Report",
+    data=report_html,
+    file_name="diamond_dynamics_report.html",
+    mime="text/html"
+)
+import matplotlib.pyplot as plt
+
+# --- CREATE CONSISTENCY FIG FOR EXPORT ---
+consistency_fig, ax1 = plt.subplots()
+ax1.plot(trend_x_labels, trend_df["Consistency"])
+ax1.set_title("Consistency Trend")
+ax1.set_ylim(0, 1)
         st.subheader("Consistency Trend")
         plot_line(
             x=trend_x_labels,
@@ -539,7 +625,11 @@ Track how a player’s performance evolves over time through consistency and adj
             y_limits=(0, 1)
         )
         st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
-
+# --- CREATE ADJUSTMENT FIG FOR EXPORT ---
+adjustment_fig, ax2 = plt.subplots()
+ax2.plot(trend_x_labels, trend_df["Adjustment"])
+ax2.set_title("Adjustment Trend")
+ax2.set_ylim(0, 1)
         st.subheader("Adjustment Trend")
         plot_line(
             x=trend_x_labels,
