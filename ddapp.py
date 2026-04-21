@@ -519,13 +519,13 @@ def plot_line(x, y, title: str, xlabel: str, ylabel: str, baseline=None, y_limit
 # TOOL PAGE (logo + no baseball-context blocks)
 # ==================================================
 if page == "Tool":
-col_logo, col_title = st.columns([2, 6])
+    col_logo, col_title = st.columns([2, 6])
 
-with col_logo:
-st.image("ddlogo.png", width=260)
+    with col_logo:
+    st.image("ddlogo.png", width=260)
 
-with col_title:
-st.markdown("""
+    with col_title:
+    st.markdown("""
         <div class="hero">
             <h1 style="margin-bottom:0;">Diamond Dynamics Tool</h1>
             <p style="margin-top:5px;">
