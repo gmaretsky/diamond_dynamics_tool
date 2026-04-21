@@ -521,7 +521,42 @@ Track how a player’s performance evolves over time through consistency and adj
         with m3:
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
+        import matplotlib.pyplot as plt
+        import io
 
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        fig.patch.set_facecolor("#0a0a0f")
+        ax.set_facecolor("#0a0a0f")
+        ax.axis("off")
+
+        ax.text(0.5, 0.85, "Diamond Dynamics",
+                ha="center", fontsize=18, color="#a855f7", fontweight="bold")
+
+        ax.text(0.5, 0.65, f"Consistency: {consistency:.2f}",
+                ha="center", fontsize=12, color="white")
+
+        ax.text(0.5, 0.57, f"Adjustment: {adjustment:.2f}",
+                ha="center", fontsize=12, color="white")
+
+        ax.text(0.5, 0.40,
+                build_summary(consistency, adjustment, baseline, value_col),
+                ha="center", fontsize=10, color="#e5e5ff", wrap=True)
+
+        ax.text(0.5, 0.22,
+                stat_insight(calc_df, value_col, baseline),
+                ha="center", fontsize=10, color="#cfcfff", wrap=True)
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+
+        st.download_button(
+            label="Download Diamond Dynamics Graphic",
+            data=buf,
+            file_name="diamond_dynamics_report.png",
+            mime="image/png"
+        )
         st.markdown(f"""
         <div class="insight-box">
             <b>Profile Summary</b><br><br>
