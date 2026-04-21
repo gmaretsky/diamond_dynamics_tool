@@ -369,7 +369,7 @@ def overall_profile(consistency: float, adjustment: float) -> str:
     if consistency >= 0.40:
         return "Moderately variable"
 
-    return "Highly variable""
+    return "Highly variable"
 def build_summary(consistency: float, adjustment: float, baseline: float, stat_name: str) -> str:
     profile = overall_profile(consistency, adjustment)
     consistency_text = classify_consistency(consistency)
