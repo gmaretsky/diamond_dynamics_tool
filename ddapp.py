@@ -624,7 +624,7 @@ xlabel="Game" if axis_type == "game" else "Date",
 ylabel="Consistency",
 y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
+st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
 # --- CREATE ADJUSTMENT FIG FOR EXPORT ---
 adjustment_fig, ax2 = plt.subplots()
 ax2.plot(trend_x_labels, trend_df["Adjustment"])
