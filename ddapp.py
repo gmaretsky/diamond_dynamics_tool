@@ -647,7 +647,7 @@ st.markdown(f"""
     {stat_insight(calc_df, value_col, baseline)}
 </div>
 """, unsafe_allow_html=True)
-
+         )
 # ==================================================
 # HOW IT WORKS PAGE
 # ==================================================
