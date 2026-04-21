@@ -525,7 +525,7 @@ if page == "Tool":
         st.image("ddlogo.png", width=260)
 
     with col_title:
-    st.markdown("""
+        st.markdown("""
         <div class="hero">
             <h1 style="margin-bottom:0;">Diamond Dynamics Tool</h1>
             <p style="margin-top:5px;">
