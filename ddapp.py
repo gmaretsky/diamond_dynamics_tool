@@ -616,13 +616,13 @@ ax1.plot(trend_x_labels, trend_df["Consistency"])
 ax1.set_title("Consistency Trend")
 ax1.set_ylim(0, 1)
 st.subheader("Consistency Trend")
-        plot_line(
-            x=trend_x_labels,
-            y=trend_df["Consistency"],
-            title="Consistency Trend",
-            xlabel="Game" if axis_type == "game" else "Date",
-            ylabel="Consistency",
-            y_limits=(0, 1)
+plot_line(
+x=trend_x_labels,
+y=trend_df["Consistency"],
+title="Consistency Trend",
+xlabel="Game" if axis_type == "game" else "Date",
+ylabel="Consistency",
+y_limits=(0, 1)
         )
         st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
 # --- CREATE ADJUSTMENT FIG FOR EXPORT ---
