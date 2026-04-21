@@ -592,7 +592,7 @@ st.download_button(
     file_name="diamond_dynamics_report.png",
     mime="image/png"
 )
-        st.markdown(f"""
+st.markdown(f"""
         <div class="insight-box">
             <b>Profile Summary</b><br><br>
             {build_summary(consistency, adjustment, baseline, value_col)}
