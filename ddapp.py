@@ -598,8 +598,7 @@ st.markdown(f"""
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
-
-        st.subheader("Consistency Trend")
+st.subheader("Consistency Trend")
         plot_line(
             x=trend_x_labels,
             y=trend_df["Consistency"],
