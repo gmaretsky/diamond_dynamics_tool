@@ -2,68 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
-import matplotlib.pyplot as plt
-import io
-import base64
 
-def fig_to_base64(fig):
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight")
-    buf.seek(0)
-    return base64.b64encode(buf.read()).decode()
-def generate_report(player_name, consistency_score, adjustment_score, insight_text, consistency_fig, adjustment_fig):
-    consistency_img = fig_to_base64(consistency_fig)
-    adjustment_img = fig_to_base64(adjustment_fig)
-    html = f"""
-    <html>
-    <head>
-        <style>
-            body {{
-                font-family: Arial;
-                background: linear-gradient(180deg, #0a0a0f, #151520);
-                color: white;
-                padding: 30px;
-            }}
-            h1 {{ color: #a855f7; }}
-            h2 {{ color: #c084fc; }}
-            .section {{ margin-bottom: 30px; }}
-            img {{
-                width: 100%;
-                border-radius: 12px;
-                margin-top: 10px;
-            }}
-            .box {{
-                background: rgba(168, 85, 247, 0.12);
-                padding: 15px;
-                border-radius: 12px;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>Diamond Dynamics Report</h1>
-        <div class="section box">
-            <h2>Player Profile</h2>
-            <p><strong>Name:</strong> {player_name}</p>
-            <p><strong>Consistency Score:</strong> {consistency_score:.2f}</p>
-            <p><strong>Adjustment Score:</strong> {adjustment_score:.2f}</p>
-        </div>
-        <div class="section">
-            <h2>Consistency Trend</h2>
-            <img src="data:image/png;base64,{consistency_img}">
-        </div>
-        <div class="section">
-            <h2>Adjustment Trend</h2>
-            <img src="data:image/png;base64,{adjustment_img}">
-        </div>
-
-        <div class="section box">
-            <h2>Data Insight</h2>
-            <p>{insight_text}</p>
-        </div>
-    </body>
-    </html>
-    """
-    return html
 # ==================================================
 # PAGE CONFIG
 # ==================================================
@@ -157,9 +96,8 @@ with st.sidebar:
 
 **Adjustment**
 - **0.70 - 1.00** = Strong
-- **0.50 - 0.69** = Moderate
-- **0.35 - 0.49** = Stable / Neutral
-- **Below 0.35** = Low Activity
+- **0.40 - 0.69** = Moderate
+- **Below 0.40** = Weak
 """)
 # ==================================================
 # STYLING (Diamond Dynamics purple/black aesthetic)
@@ -301,41 +239,28 @@ def calculate_quality_weighted_consistency(values: np.ndarray) -> float:
     if len(values) == 1:
         return 0.50
 
-    values = np.array(values, dtype=float)
-
-    # --- STEP 1: Measure spread (this is the core fix) ---
-    std_dev = np.std(values)
-    value_range = np.max(values) - np.min(values)
-
-    if value_range == 0:
-        spread_score = 1.0
-    else:
-        spread_score = 1 - (std_dev / value_range)
-
-    spread_score = max(0.0, min(1.0, spread_score))
-
-    # --- STEP 2: Reward tight clustering around recent performance ---
-    recent_window = values[-min(5, len(values)):]
-    recent_std = np.std(recent_window)
-
-    if value_range == 0:
-        recent_stability = 1.0
-    else:
-        recent_stability = 1 - (recent_std / value_range)
-
-    recent_stability = max(0.0, min(1.0, recent_stability))
-
-    # --- STEP 3: Light quality influence (NOT dominant) ---
+    baseline = float(np.mean(values))
+    deviations = np.abs(values - baseline)
     quality_scale = min_max_normalize(values)
-    avg_quality = float(np.mean(quality_scale))
 
-    # --- FINAL BLEND ---
-    consistency = (
-        0.50 * spread_score +      # overall tightness
-        0.30 * recent_stability +  # recent stability
-        0.20 * avg_quality        # slight performance reward
-    )
+    weighted_deviations = []
+    for i in range(len(values)):
+        deviation = deviations[i]
+        penalty_weight = 1 - quality_scale[i]  # worse performance -> larger penalty
+        weighted_deviations.append(deviation * (1 + penalty_weight))
 
+    weighted_deviations = np.array(weighted_deviations, dtype=float)
+
+    avg_weighted_dev = float(np.mean(weighted_deviations))
+    max_weighted_dev = float(np.max(weighted_deviations))
+
+    if max_weighted_dev == 0:
+        stability_component = 1.0
+    else:
+        stability_component = 1 - (avg_weighted_dev / max_weighted_dev)
+
+    average_quality = float(np.mean(quality_scale))
+    consistency = (0.60 * average_quality) + (0.40 * stability_component)
     return float(max(0.0, min(1.0, consistency)))
 
 def calculate_adjustment_score(values: np.ndarray) -> float:
@@ -413,28 +338,22 @@ def classify_adjustment(score: float) -> str:
         return "Not enough data yet"
     if score >= 0.70:
         return "Strong"
-    if score >= 0.50:
+    if score >= 0.40:
         return "Moderate"
-    if score >= 0.35:
-        return "Stable / Neutral"
-
-    return "Low Activity"
+    return "Weak"
 
 def overall_profile(consistency: float, adjustment: float) -> str:
     if pd.isna(consistency) and pd.isna(adjustment):
         return "Early sample"
-    if consistency >= 0.70:
-        if adjustment >= 0.70:
-            return "Stable and resilient"
-        return "Stable"
-    if consistency >= 0.50:
-        if adjustment >= 0.70:
-            return "Stable with adaptability"
-        return "Generally stable"
-    if consistency >= 0.40:
-        return "Moderately variable"
-
-    return "Highly variable"
+    if pd.isna(consistency):
+        return "Adjustment forming"
+    if consistency >= 0.70 and adjustment >= 0.70:
+        return "Stable and resilient"
+    if consistency < 0.70 and adjustment >= 0.70:
+        return "Variable but adaptive"
+    if consistency >= 0.70 and adjustment < 0.70:
+        return "Stable but less responsive"
+    return "Variable and unstable"
 def build_summary(consistency: float, adjustment: float, baseline: float, stat_name: str) -> str:
     profile = overall_profile(consistency, adjustment)
     consistency_text = classify_consistency(consistency)
@@ -450,22 +369,15 @@ def build_summary(consistency: float, adjustment: float, baseline: float, stat_n
 
 def trend_direction_text(series: pd.Series, label: str) -> str:
     valid = series.dropna()
-    if len(valid) < 3:
+    if len(valid) < 2:
         return f"There is not enough history yet to evaluate the player's {label.lower()} trend."
     start = float(valid.iloc[0])
-    mid = float(valid.iloc[len(valid)//2])
     end = float(valid.iloc[-1])
-    # Upward pattern
-    if end > start and end >= mid:
-        return f"The player's {label.lower()} trend shows gradual improvement over the sample."
-    # Early drop then stabilize/recover
-    if end < start and end >= mid:
-        return f"The player's {label.lower()} trend dipped early but stabilized over time."
-    # Continued decline
-    if end < start and end < mid:
-        return f"The player's {label.lower()} trend shows a downward pattern over the sample."
-    # Default: stable
-    return f"The player's {label.lower()} trend has remained relatively stable with minor fluctuations."
+    if end > start:
+        return f"The player's {label.lower()} trend is moving upward over the sample."
+    if end < start:
+        return f"The player's {label.lower()} trend is moving downward over the sample."
+    return f"The player's {label.lower()} trend has remained relatively flat."
 
 def stat_insight(calc_df: pd.DataFrame, value_col: str, baseline: float) -> str:
     latest = float(calc_df[value_col].iloc[-1])
@@ -589,58 +501,30 @@ Track how a player’s performance evolves over time through consistency and adj
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown("### 📥 Export")
-        insight_text = stat_insight(calc_df, value_col, baseline)
-        report_html = generate_report(
-        player_name="Player",
-        consistency_score=consistency,
-        adjustment_score=adjustment,
-        insight_text=insight_text,
-        consistency_fig=consistency_fig,
-        adjustment_fig=adjustment_fig
-)
 
-st.download_button(
-    label="Download Diamond Dynamics Report",
-    data=report_html,
-    file_name="diamond_dynamics_report.html",
-    mime="text/html"
-)
-import matplotlib.pyplot as plt
-
-# --- CREATE CONSISTENCY FIG FOR EXPORT ---
-consistency_fig, ax1 = plt.subplots()
-ax1.plot(trend_x_labels, trend_df["Consistency"])
-ax1.set_title("Consistency Trend")
-ax1.set_ylim(0, 1)
-st.subheader("Consistency Trend")
-plot_line(
-x=trend_x_labels,
-y=trend_df["Consistency"],
-title="Consistency Trend",
-xlabel="Game" if axis_type == "game" else "Date",
-ylabel="Consistency",
-y_limits=(0, 1)
+        st.subheader("Consistency Trend")
+        plot_line(
+            x=trend_x_labels,
+            y=trend_df["Consistency"],
+            title="Consistency Trend",
+            xlabel="Game" if axis_type == "game" else "Date",
+            ylabel="Consistency",
+            y_limits=(0, 1)
         )
-st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
-# --- CREATE ADJUSTMENT FIG FOR EXPORT ---
-adjustment_fig, ax2 = plt.subplots()
-ax2.plot(trend_x_labels, trend_df["Adjustment"])
-ax2.set_title("Adjustment Trend")
-ax2.set_ylim(0, 1)
-st.subheader("Adjustment Trend")
-plot_line(
-x=trend_x_labels,
-y=trend_df["Adjustment"],
-title="Adjustment Trend",
-xlabel="Game" if axis_type == "game" else "Date",
-ylabel="Adjustment",
-y_limits=(0, 1)
-        )
-st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
 
-st.markdown(f"""
+        st.subheader("Adjustment Trend")
+        plot_line(
+            x=trend_x_labels,
+            y=trend_df["Adjustment"],
+            title="Adjustment Trend",
+            xlabel="Game" if axis_type == "game" else "Date",
+            ylabel="Adjustment",
+            y_limits=(0, 1)
+        )
+        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+
+        st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
