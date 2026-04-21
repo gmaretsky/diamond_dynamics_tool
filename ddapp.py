@@ -639,9 +639,9 @@ xlabel="Game" if axis_type == "game" else "Date",
 ylabel="Adjustment",
 y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
 
-        st.markdown(f"""
+st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
