@@ -385,15 +385,22 @@ def build_summary(consistency: float, adjustment: float, baseline: float, stat_n
 
 def trend_direction_text(series: pd.Series, label: str) -> str:
     valid = series.dropna()
-    if len(valid) < 2:
+    if len(valid) < 3:
         return f"There is not enough history yet to evaluate the player's {label.lower()} trend."
     start = float(valid.iloc[0])
+    mid = float(valid.iloc[len(valid)//2])
     end = float(valid.iloc[-1])
-    if end > start:
-        return f"The player's {label.lower()} trend is moving upward over the sample."
-    if end < start:
-        return f"The player's {label.lower()} trend is moving downward over the sample."
-    return f"The player's {label.lower()} trend has remained relatively flat."
+    # Upward pattern
+    if end > start and end >= mid:
+        return f"The player's {label.lower()} trend shows gradual improvement over the sample."
+    # Early drop then stabilize/recover
+    if end < start and end >= mid:
+        return f"The player's {label.lower()} trend dipped early but stabilized over time."
+    # Continued decline
+    if end < start and end < mid:
+        return f"The player's {label.lower()} trend shows a downward pattern over the sample."
+    # Default: stable
+    return f"The player's {label.lower()} trend has remained relatively stable with minor fluctuations."
 
 def stat_insight(calc_df: pd.DataFrame, value_col: str, baseline: float) -> str:
     latest = float(calc_df[value_col].iloc[-1])
