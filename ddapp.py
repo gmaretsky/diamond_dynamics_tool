@@ -563,7 +563,6 @@ Track how a player’s performance evolves over time through consistency and adj
     {stat_insight(calc_df, value_col, baseline)}
 </div>
 """, unsafe_allow_html=True)
-
 # ⬇️ ADD THIS RIGHT HERE
 report_html = f"""
 <html>
@@ -587,38 +586,30 @@ h1 {{
 }}
 </style>
 </head>
-
 <body>
-
 <h1>Diamond Dynamics Report</h1>
-
 <div class="box">
 <b>Consistency:</b> {consistency:.2f}<br>
 <b>Adjustment:</b> {adjustment:.2f}<br>
 <b>Baseline:</b> {baseline:.3f}
 </div>
-
 <div class="box">
 <b>Profile Summary</b><br><br>
 {build_summary(consistency, adjustment, baseline, value_col)}
 </div>
-
 <div class="box">
 <b>Data Insight</b><br><br>
 {stat_insight(calc_df, value_col, baseline)}
 </div>
-
 </body>
 </html>
 """
-
 st.download_button(
     label="Download Diamond Dynamics Report",
     data=report_html,
     file_name="diamond_dynamics_report.html",
     mime="text/html"
 )
-
 # ==================================================
 # HOW IT WORKS PAGE
 # ==================================================
