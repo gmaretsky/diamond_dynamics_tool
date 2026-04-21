@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
+import matplotlib.pyplot as plt
 import io
 import base64
 
@@ -589,7 +590,7 @@ Track how a player’s performance evolves over time through consistency and adj
         </div>
         """, unsafe_allow_html=True)
         st.markdown("---")
-st.markdown("### 📥 Export")
+        st.markdown("### 📥 Export")
 
 insight_text = stat_insight(calc_df, value_col, baseline)
 
