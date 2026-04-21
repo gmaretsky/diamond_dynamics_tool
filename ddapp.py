@@ -630,14 +630,14 @@ adjustment_fig, ax2 = plt.subplots()
 ax2.plot(trend_x_labels, trend_df["Adjustment"])
 ax2.set_title("Adjustment Trend")
 ax2.set_ylim(0, 1)
-        st.subheader("Adjustment Trend")
-        plot_line(
-            x=trend_x_labels,
-            y=trend_df["Adjustment"],
-            title="Adjustment Trend",
-            xlabel="Game" if axis_type == "game" else "Date",
-            ylabel="Adjustment",
-            y_limits=(0, 1)
+st.subheader("Adjustment Trend")
+plot_line(
+x=trend_x_labels,
+y=trend_df["Adjustment"],
+title="Adjustment Trend",
+xlabel="Game" if axis_type == "game" else "Date",
+ylabel="Adjustment",
+y_limits=(0, 1)
         )
         st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
 
