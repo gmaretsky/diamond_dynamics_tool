@@ -591,16 +591,14 @@ Track how a player’s performance evolves over time through consistency and adj
         """, unsafe_allow_html=True)
         st.markdown("---")
         st.markdown("### 📥 Export")
-
-insight_text = stat_insight(calc_df, value_col, baseline)
-
-report_html = generate_report(
-    player_name="Player",
-    consistency_score=consistency,
-    adjustment_score=adjustment,
-    insight_text=insight_text,
-    consistency_fig=consistency_fig,
-    adjustment_fig=adjustment_fig
+        insight_text = stat_insight(calc_df, value_col, baseline)
+        report_html = generate_report(
+        player_name="Player",
+        consistency_score=consistency,
+        adjustment_score=adjustment,
+        insight_text=insight_text,
+        consistency_fig=consistency_fig,
+        adjustment_fig=adjustment_fig
 )
 
 st.download_button(
