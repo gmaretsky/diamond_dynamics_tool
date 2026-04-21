@@ -522,7 +522,7 @@ if page == "Tool":
     col_logo, col_title = st.columns([2, 6])
 
     with col_logo:
-    st.image("ddlogo.png", width=260)
+        st.image("ddlogo.png", width=260)
 
     with col_title:
     st.markdown("""
