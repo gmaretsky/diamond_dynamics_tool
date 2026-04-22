@@ -521,57 +521,16 @@ Track how a player’s performance evolves over time through consistency and adj
         with m3:
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
-st.markdown("---")
 
-st.markdown(f"""
-<div style="
-    background: linear-gradient(180deg, #0a0a0f, #151520);
-    padding: 25px;
-    border-radius: 16px;
-    text-align: center;
-">
-
-    <h2 style="color:#a855f7; margin-bottom:10px;">Diamond Dynamics Report</h2>
-
-    <p style="font-size:18px;">
-        Consistency: <b>{consistency:.2f}</b><br>
-        Adjustment: <b>{adjustment:.2f}</b>
-    </p>
-
-    <div style="
-        margin-top:15px;
-        padding:12px;
-        background: rgba(124,58,237,0.18);
-        border-left: 4px solid #a78bfa;
-        border-radius:10px;
-    ">
-        <b>Profile Summary</b><br><br>
-        {build_summary(consistency, adjustment, baseline, value_col)}
-    </div>
-
-    <div style="
-        margin-top:15px;
-        padding:12px;
-        background: rgba(124,58,237,0.12);
-        border-radius:10px;
-    ">
-        <b>Data Insight</b><br><br>
-        {stat_insight(calc_df, value_col, baseline)}
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
-
-st.info("Tip: This report can be saved or captured for sharing or reference.")
-st.markdown(f"""
+        st.markdown(f"""
         <div class="insight-box">
             <b>Profile Summary</b><br><br>
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
 
-st.subheader("Consistency Trend")
-plot_line(
+        st.subheader("Consistency Trend")
+        plot_line(
             x=trend_x_labels,
             y=trend_df["Consistency"],
             title="Consistency Trend",
@@ -579,9 +538,9 @@ plot_line(
             ylabel="Consistency",
             y_limits=(0, 1)
         )
-st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
+        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
 
-st.subheader("Adjustment Trend")
+        st.subheader("Adjustment Trend")
         plot_line(
             x=trend_x_labels,
             y=trend_df["Adjustment"],
@@ -590,9 +549,9 @@ st.subheader("Adjustment Trend")
             ylabel="Adjustment",
             y_limits=(0, 1)
         )
-st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
 
-st.markdown(f"""
+        st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
