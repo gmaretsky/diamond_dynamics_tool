@@ -521,7 +521,7 @@ Track how a player’s performance evolves over time through consistency and adj
         with m3:
             st.metric("Adjustment", "N/A" if pd.isna(adjustment) else f"{adjustment:.2f}")
             st.caption(classify_adjustment(adjustment))
-      st.markdown("---")
+st.markdown("---")
 
 st.markdown(f"""
 <div style="
