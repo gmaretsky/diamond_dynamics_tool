@@ -571,7 +571,7 @@ st.markdown(f"""
         """, unsafe_allow_html=True)
 
 st.subheader("Consistency Trend")
-        plot_line(
+plot_line(
             x=trend_x_labels,
             y=trend_df["Consistency"],
             title="Consistency Trend",
