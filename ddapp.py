@@ -563,14 +563,14 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.info("Tip: This report can be saved or captured for sharing or reference.")
-        st.markdown(f"""
+st.markdown(f"""
         <div class="insight-box">
             <b>Profile Summary</b><br><br>
             {build_summary(consistency, adjustment, baseline, value_col)}
         </div>
         """, unsafe_allow_html=True)
 
-        st.subheader("Consistency Trend")
+st.subheader("Consistency Trend")
         plot_line(
             x=trend_x_labels,
             y=trend_df["Consistency"],
@@ -579,9 +579,9 @@ st.info("Tip: This report can be saved or captured for sharing or reference.")
             ylabel="Consistency",
             y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
+st.write(trend_direction_text(trend_df["Consistency"], "Consistency"))
 
-        st.subheader("Adjustment Trend")
+st.subheader("Adjustment Trend")
         plot_line(
             x=trend_x_labels,
             y=trend_df["Adjustment"],
@@ -590,9 +590,9 @@ st.info("Tip: This report can be saved or captured for sharing or reference.")
             ylabel="Adjustment",
             y_limits=(0, 1)
         )
-        st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
+st.write(trend_direction_text(trend_df["Adjustment"], "Adjustment"))
 
-        st.markdown(f"""
+st.markdown(f"""
 <div class="insight-box">
     <b>Data Insight</b><br><br>
     {stat_insight(calc_df, value_col, baseline)}
