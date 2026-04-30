@@ -1,4 +1,4 @@
-import streamlit as st
+Simport streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
@@ -277,26 +277,69 @@ def calculate_quality_weighted_consistency(values: np.ndarray) -> float:
 
     return float(max(0.0, min(1.0, consistency)))
 
-def calculate_adjustment_score(values: np.ndarray) -> float:
+def detect_stat_direction(stat_name: str) -> str:
+    lower_is_better = ["era", "whip", "fip", "xfip", "siera", "bb/9", "hr/9"]
+    stat = stat_name.lower()
+
+    if any(s in stat for s in lower_is_better):
+        return "lower"
+
+    return "higher"
+
+
+def calculate_adjustment_score(values: np.ndarray, stat_name: str = "") -> float:
     if len(values) == 0:
         return np.nan
     if len(values) == 1:
         return 0.50
 
+    values = np.array(values, dtype=float)
+    direction = detect_stat_direction(stat_name)
+
     step_scores = [0.50]
+
     for i in range(1, len(values)):
         prior_values = values[:i]
         prior_baseline = float(np.mean(prior_values))
-        current_dev = abs(values[i] - prior_baseline)
-        prior_spread = float(np.max(np.abs(prior_values - prior_baseline))) if len(prior_values) > 0 else 0.0
-        scale = max(prior_spread, current_dev)
+        current_value = values[i]
 
-        if scale == 0:
-            step_score = 1.0
+        prior_spread = float(np.std(prior_values))
+        if prior_spread == 0:
+            prior_spread = max(abs(current_value - prior_baseline), 0.001)
+
+        # Rolling stability piece
+        current_dev = abs(current_value - prior_baseline)
+        stability_score = 1 - min(current_dev / (prior_spread * 2), 1)
+        stability_score = max(0.0, min(1.0, stability_score))
+
+        # Event-based response piece
+        previous_value = values[i - 1]
+
+        if direction == "lower":
+            previous_was_bad_event = previous_value > prior_baseline
+            current_improved = current_value < previous_value
         else:
-            step_score = max(0.0, min(1.0, 1 - (current_dev / scale)))
+            previous_was_bad_event = previous_value < prior_baseline
+            current_improved = current_value > previous_value
 
-        step_scores.append(step_score)
+        event_response_score = 0.50
+
+        if previous_was_bad_event:
+            change_size = abs(current_value - previous_value)
+            response_strength = min(change_size / (prior_spread * 2), 1)
+
+            if current_improved:
+                event_response_score = 0.50 + (0.50 * response_strength)
+            else:
+                event_response_score = 0.50 - (0.50 * response_strength)
+
+        # Hybrid score: still stable/rolling, but more responsive to bounce-backs
+        step_score = (
+            0.55 * stability_score +
+            0.45 * event_response_score
+        )
+
+        step_scores.append(max(0.0, min(1.0, step_score)))
 
     return float(np.mean(step_scores))
 
