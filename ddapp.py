@@ -287,11 +287,21 @@ def detect_stat_direction(stat_name: str) -> str:
     return "higher"
 
 
-def calculate_adjustment_score(values: np.ndarray, stat_name: str = "") -> float:
+def detect_stat_direction(stat_name: str) -> str:
+    lower_is_better = ["era", "whip", "fip", "xfip", "siera", "bb/9", "hr/9"]
+    stat = stat_name.lower()
+
+    if any(s in stat for s in lower_is_better):
+        return "lower"
+
+    return "higher"
+
+
+def calculate_adjustment_steps(values: np.ndarray, stat_name: str = "") -> list:
     if len(values) == 0:
-        return np.nan
+        return []
     if len(values) == 1:
-        return 0.50
+        return [0.50]
 
     values = np.array(values, dtype=float)
     direction = detect_stat_direction(stat_name)
@@ -307,12 +317,10 @@ def calculate_adjustment_score(values: np.ndarray, stat_name: str = "") -> float
         if prior_spread == 0:
             prior_spread = max(abs(current_value - prior_baseline), 0.001)
 
-        # Rolling stability piece
         current_dev = abs(current_value - prior_baseline)
         stability_score = 1 - min(current_dev / (prior_spread * 2), 1)
         stability_score = max(0.0, min(1.0, stability_score))
 
-        # Event-based response piece
         previous_value = values[i - 1]
 
         if direction == "lower":
@@ -333,15 +341,24 @@ def calculate_adjustment_score(values: np.ndarray, stat_name: str = "") -> float
             else:
                 event_response_score = 0.50 - (0.50 * response_strength)
 
-        # Hybrid score: still stable/rolling, but more responsive to bounce-backs
         step_score = (
-            0.55 * stability_score +
-            0.45 * event_response_score
+            0.45 * stability_score +
+            0.55 * event_response_score
         )
 
         step_scores.append(max(0.0, min(1.0, step_score)))
 
+    return step_scores
+
+
+def calculate_adjustment_score(values: np.ndarray, stat_name: str = "") -> float:
+    step_scores = calculate_adjustment_steps(values, stat_name)
+
+    if len(step_scores) == 0:
+        return np.nan
+
     return float(np.mean(step_scores))
+
 
 def calculate_full_sample(df: pd.DataFrame, value_col: str):
     working = df.copy()
@@ -353,9 +370,10 @@ def calculate_full_sample(df: pd.DataFrame, value_col: str):
 
     values = working[value_col].to_numpy(dtype=float)
     consistency = calculate_quality_weighted_consistency(values)
-    adjustment = calculate_adjustment_score(values)
+    adjustment = calculate_adjustment_score(values, value_col)
 
     return consistency, adjustment, baseline, working
+
 
 def build_trends(df: pd.DataFrame, time_col: str, value_col: str) -> pd.DataFrame:
     time_vals = []
@@ -365,11 +383,20 @@ def build_trends(df: pd.DataFrame, time_col: str, value_col: str) -> pd.DataFram
 
     for i in range(1, len(df) + 1):
         temp = df.iloc[:i].copy()
+
         c, a, b, _ = calculate_full_sample(temp, value_col)
+
+        adjustment_steps = calculate_adjustment_steps(
+            temp[value_col].to_numpy(dtype=float),
+            value_col
+        )
+
+        latest_adjustment = adjustment_steps[-1] if len(adjustment_steps) > 0 else np.nan
+
         time_vals.append(df[time_col].iloc[i - 1])
         baseline_vals.append(b)
         consistency_vals.append(c)
-        adjustment_vals.append(a)
+        adjustment_vals.append(latest_adjustment)
 
     return pd.DataFrame({
         time_col: time_vals,
